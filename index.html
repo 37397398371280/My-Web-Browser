@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Web Browser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; /* Adjust the height as needed */
+  background-color: #333;
+  z-index: -1;
+}
+
+#searchInput {
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+  width: 300px;
+  font-size: 16px;
+}
+
+button,
+input[type="button"],
+input[type="submit"] {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 16px;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+#customSearchButton {
+  background-color: #2196F3;
+}
+
+#customSearchButton:hover {
+  background-color: #1976D2;
+}
+
+main {
+  padding: 20px;
+}
+
+#fileInput {
+  margin: 0 auto;
+  display: block;
+  visibility: hidden;
+}
+
+#fileInputLabel {
+  display: none;
+}
+
+#removeButton {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#resetsettingsButton {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+    #gobackButton {
+  background-color: #24A0ED;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+}
+    
+.color-settings {
+  margin-bottom: 10px;
+}
+
+.color-input {
+  margin-left: 10px;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.color-input + label {
+  margin-left: 10px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.custom-search-input {
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+  width: 200px;
+  font-size: 16px;
+}
+
+select#searchOptions {
+  padding: 5px;
+  border: none;
+  border-radius: 3px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #333;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select#searchOptions option {
+  background-color: #fff;
+  color: #333;
+}
+
+select#searchOptions:hover {
+  background-color: #f5f5f5;
+}
+
+select#searchOptions:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #2196F3;
+}
+
+select#searchOptions::-ms-expand {
+  display: none;
+}
+
+h1 {
+  font-size: 24px;
+  color: #333;
+
+  font-weight: bold;
+  text-align: center;
+}
+
+  h3 {
+  font-size: 20px;
+  color: #333;
+
+  font-weight: bold;
+  text-align: center;
+}
+
+    p {
+  font-size: 15.75px;
+  color: #333;
+
+  text-align: center;
+}
+
+#uploadContainer {
+  text-align: center;
+}
+
+#uploadButton {
+  margin: 0 auto;
+}
+    
+p.version-info {
+  font-size: 14px;
+  color: #888;
+  margin: 0;
+  padding: 0;
+}
+    
+  </style>
+</head>
+<body>
+  
+  <header>
+    <input type="text" id="searchInput" placeholder="Search...">
+    <select id="searchOptions" onchange="saveSearchOption()">
+      <option value="https://www.google.com/search?q=%s">Google</option>
+      <option value="https://www.bing.com/search?q=%s">Bing</option>
+      <option value="https://www.opera.com/search?q=%s">Opera</option>
+    </select>
+    <button id="searchButton" onclick="search()">Search</button>
+    <button id="customSearchButton" onclick="toggleCustomSearch(true)">Custom Search</button>
+  </header>
+
+  <main>
+    <div id="browserContent">
+      <!-- Display search results or website shortcuts based on user input -->
+    </div>
+
+    <div id="customSearchOptions" style="display: none;">
+      <input type="text" id="websiteUrlInput" placeholder="Website URL" class="custom-search-input" onchange="saveCustomSearchSettings()">
+      <input type="text" id="shortcutInput" placeholder="Shortcut" class="custom-search-input" onchange="saveCustomSearchSettings()">
+      <input type="text" id="keyInput" placeholder="Key (%s or %q)" class="custom-search-input" onchange="saveCustomSearchSettings()">
+    </div>
+
+<h1>Options</h1>
+
+<center>
+    
+    <div id="colorSettings" class="color-settings">
+      <input type="color" id="backgroundInput" class="color-input" onchange="saveColorSettings()">
+      <label for="backgroundInput">Background Color</label>
+    </div>
+
+    <div id="colorSettings" class="color-settings">
+      <input type="color" id="textColorInput" class="color-input" onchange="saveColorSettings()">
+      <label for="textColorInput">Text Color</label>
+    </div>
+
+  <h1>Bugs</h1>
+  <h3>Version: 1.0.0.2.1122819 ALPHA Bugs</h3>
+  <p>- No other JS to make it affect the search bar with the custom search option inputs, but the autosave still works on there!</p>
+
+<p>- Can't do reset settings on search options until refreshed the page and not on clicked reset settings bugs!</p>
+
+<p>- Need to be if not a %s or even a %q, then don't allow text. And if not a website URL, then don't allow text for custom search options. And if all 3 text inputs were successful and have texts inside inputs, then make it disable the other options, which are the search options. For example, "Google, Bing, Opera, etc." and need to be disabled. Otherwise, if "2 or 1 or 0" texts in the input, like "2/3 or 1/3 or 0/3," then if not "3/3," then do not disable it. Instead, enable it instead of disable it. That's it, really!</p>
+
+<p>- Text color won't work for all texts, and it needs to work for all texts for their color!</p>
+
+<h1>Updates</h1>
+  <h3>Version: 1.0.0.2.1122819 ALPHA Updates</h3>
+<p>"Bugs Tab Desc" fixed!</p>
+  
+    <input type="file" id="fileInput" onchange="handleFileUpload()">
+    <button id="uploadButton" onclick="uploadFile()">Upload</button>
+    <button id ="removeButton" onclick="removeFile()" style="display: none;">Remove</button>
+  
+
+      <!-- Reset Settings -->
+    <button onclick="resetSettings()" id="resetsettingsButton">Reset Settings</button>
+
+     
+
+  
+ 
+  
+    
+</center>
+
+    <center>
+
+<br>
+      
+       <button id="gobackButton" onclick="gbbf()">Go Back</button>
+    </center>
+
+<center>
+    
+<br>
+    
+ <p class="version-info">Version Info: 1.0.0.2.1122819 ALPHA</p>
+
+</center>
+    
+  </main>
+
+    
+      
+  <script>
+
+
+    
+window.addEventListener('load', function() {
+  var searchInput = document.getElementById('searchInput');
+  searchInput.value = localStorage.getItem('searchInputValue');
+
+  var searchOptions = document.getElementById('searchOptions');
+  searchOptions.value = localStorage.getItem('searchOptionValue');
+
+  var customSearchOptions = document.getElementById('customSearchOptions');
+  var customSearchButton = document.getElementById('customSearchButton');
+
+  if (localStorage.getItem('customSearchOptionsVisible') === 'true') {
+    customSearchOptions.style.display = 'block';
+    customSearchButton.textContent = 'Hide Custom Search';
+  } else {
+    customSearchOptions.style.display = 'none';
+    customSearchButton.textContent = 'Custom Search';
+  }
+
+  var savedCustomSearch = JSON.parse(localStorage.getItem('savedCustomSearch'));
+  if (savedCustomSearch) {
+    var websiteUrlInput = document.getElementById('websiteUrlInput');
+    var shortcutInput = document.getElementById('shortcutInput');
+    var keyInput = document.getElementById('keyInput');
+
+    websiteUrlInput.value = savedCustomSearch.url;
+    shortcutInput.value = savedCustomSearch.shortcut;
+    keyInput.value = savedCustomSearch.key;
+  }
+
+  var backgroundColor = localStorage.getItem('backgroundColor');
+  var textColor = localStorage.getItem('textColor');
+
+  if (backgroundColor) {
+    document.body.style.backgroundColor = backgroundColor;
+    document.getElementById('backgroundInput').value = backgroundColor;
+  }
+
+  if (textColor) {
+    document.body.style.color = textColor;
+    document.getElementById('textColorInput').value = textColor;
+  }
+
+  var uploadedFile = localStorage.getItem('uploadedFile');
+  if (uploadedFile) {
+    document.body.style.backgroundImage = "url('" + uploadedFile + "')";
+    document.getElementById('removeButton').style.display = 'inline-block';
+    document.getElementById('fileInput').disabled = true;
+  }
+});
+
+function search() {
+  var query = document.getElementById('searchInput').value;
+  var searchOptions = document.getElementById('searchOptions');
+  var selectedOption = searchOptions.value;
+  
+  if (selectedOption === 'custom') {
+    var websiteUrlInput = document.getElementById('websiteUrlInput');
+    var shortcutInput = document.getElementById('shortcutInput');
+    var keyInput = document.getElementById('keyInput');
+    
+    var websiteUrl = websiteUrlInput.value;
+    var shortcut = shortcutInput.value;
+    var key = keyInput.value;
+    
+    var searchUrl = websiteUrl.replace(/%s/g, query);
+    searchUrl = searchUrl.replace(/%q/g, '"' + query + '"');
+    window.location.href = searchUrl;
+  } else {
+    var searchUrl = selectedOption.replace(/%s/g, query);
+    searchUrl = searchUrl.replace(/%q/g, '"' + query + '"');
+    window.location.href = searchUrl;
+  }
+}
+
+function toggleCustomSearch(autoSave) {
+  var customSearchOptions = document.getElementById('customSearchOptions');
+  var customSearchButton = document.getElementById('customSearchButton');
+
+  if (customSearchOptions.style.display === 'none') {
+    customSearchOptions.style.display = 'block';
+    customSearchButton.textContent = 'Hide Custom Search';
+    if (autoSave) {
+      localStorage.setItem('customSearchOptionsVisible', 'true');
+    }
+  } else {
+    customSearchOptions.style.display = 'none';
+    customSearchButton.textContent = 'Custom Search';
+    if (autoSave) {
+      localStorage.setItem('customSearchOptionsVisible', 'false');
+    }
+  }
+}
+
+function saveCustomSearchSettings() {
+  var websiteUrlInput = document.getElementById('websiteUrlInput');
+  var shortcutInput = document.getElementById('shortcutInput');
+  var  keyInput = document.getElementById('keyInput');
+
+  var customSearch = {
+    url: websiteUrlInput.value,
+    shortcut: shortcutInput.value,
+    key: keyInput.value
+  };
+
+  localStorage.setItem('savedCustomSearch', JSON.stringify(customSearch));
+}
+
+function handleFileUpload() {
+  var fileInput = document.getElementById('fileInput');
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.body.style.backgroundImage = "url('" + e.target.result + "')";
+    document.getElementById('removeButton').style.display = 'inline-block';
+    localStorage.setItem('uploadedFile', e.target.result);
+  };
+  reader.readAsDataURL(file);
+  fileInput.disabled = true;
+}
+
+function uploadFile() {
+  var fileInput = document.getElementById('fileInput');
+  fileInput.click();
+}
+
+function removeFile() {
+  document.body.style.backgroundImage = '';
+  document.getElementById('removeButton').style.display = 'none';
+  document.getElementById('fileInput').disabled = false;
+  localStorage.removeItem('uploadedFile');
+}
+
+function saveSearchOption() {
+  var searchOptions = document.getElementById('searchOptions');
+  localStorage.setItem('searchOptionValue', searchOptions.value);
+}
+
+function saveColorSettings() {
+  var backgroundInput = document.getElementById('backgroundInput');
+  var textColorInput = document.getElementById('textColorInput');
+
+  var backgroundColor = backgroundInput.value;
+  var textColor = textColorInput.value;
+
+  document.body.style.backgroundColor = backgroundColor;
+  document.body.style.color = textColor;
+
+  localStorage.setItem('backgroundColor', backgroundColor);
+  localStorage.setItem('textColor', textColor);
+} 
+
+function resetSettings() {
+  localStorage.removeItem('searchInputValue');
+  localStorage.removeItem('searchOptionValue');
+  localStorage.removeItem('customSearchOptionsVisible');
+  localStorage.removeItem('savedCustomSearch');
+  localStorage.removeItem('backgroundColor');
+  localStorage.removeItem('textColor');
+  localStorage.removeItem('uploadedFile');
+
+  var searchInput = document.getElementById('searchInput');
+  searchInput.value = '';
+
+  var searchOptions = document.getElementById('searchOptions');
+  searchOptions.selectedIndex = 0;
+
+  var customSearchOptions = document.getElementById('customSearchOptions');
+  customSearchOptions.style.display = 'none';
+
+  var customSearchButton = document.getElementById('customSearchButton');
+  customSearchButton.textContent = 'Custom Search';
+
+  var websiteUrlInput = document.getElementById('websiteUrlInput');
+  websiteUrlInput.value = '';
+
+  var shortcutInput = document.getElementById('shortcutInput');
+  shortcutInput.value = '';
+
+  var keyInput = document.getElementById('keyInput');
+  keyInput.value = '';
+
+  var backgroundInput = document.getElementById('backgroundInput');
+  backgroundInput.value = '';
+
+  var textColorInput = document.getElementById('textColorInput');
+  textColorInput.value = '';
+
+  document.body.style.backgroundColor = '';
+  document.body.style.color = '';
+
+  var removeButton = document.getElementById('removeButton');
+  removeButton.style.display = 'none';
+
+  var fileInput = document.getElementById('fileInput');
+  fileInput.disabled = false;
+  document.getElementById('searchOptions').selectedIndex = 0;
+}
+
+function gbbf() {
+  window.open("https://files.coltensus.repl.co/","_self")
+  
+}
+    
+ </script>
+
+<script src="https://files.coltensus.repl.co/Offline-Screen-2.js"></script>
+
+    <script src="https://coltensus.repl.co/devicedetailsgetterforconsolelogonly.js"></script>
+  
+</body>
+</html>
+
+<head>
+  <style>
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #loading-screen h1 {
+      color: #fff;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Styles */
+    @media only screen and (max-width: 600px) {
+      #loading-screen h1 {
+        font-size: 18px;
+      }
+
+      .loader {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      setTimeout(function() {
+        document.getElementById("loading-screen").style.display = "none";
+      }, 1000);
+    });
+  </script>
+</head>
+<body>
+  <div id="loading-screen">
+    <h1>My Web Browser ALPHA</h1>
+    <div class="loader"></div>
+  </div>
+
+  <!-- Your website content goes here -->
+</body>
